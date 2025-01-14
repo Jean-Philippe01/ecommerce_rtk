@@ -1,5 +1,9 @@
 import React from 'react';
 import './ProductList.css'; 
+import { useDispatch } from 'react-redux';
+import { useState } from 'react';
+import { addItemToCart } from './CartSlice';
+
 
 const ProductList = () => {
 
@@ -9,6 +13,13 @@ const ProductList = () => {
     { id: 3, name: 'Product C', price: 30 },
   ];
 
+  const dispatch = useDispatch();
+  const [disabledProducts, setDisabledProducts] = useState([]); // State to store disabled products
+  const handleAddToCart = product => {
+    dispatch(addItemToCart(product));
+    setDisabledProducts([...disabledProducts, product.id]); // Mark the product as disabled
+  };
+
   return (
     <div className="product-list">
       <h2 className="product-list-title">Products</h2>
@@ -16,7 +27,10 @@ const ProductList = () => {
         {products.map(product => (
             <li key={product.id} className="product-list_item">
                 <span>{product.name} - ${product.price}</span>
-                <button>
+                <button 
+                    className={`add-to-cart-btn ${disabledProducts.includes(product.id) ? 'disabled' : ''}`}
+                    onClick={() => handleAddToCart(product)}
+                    disabled={disabledProducts.includes(product.id)}  /* Disable button if product is in disabledProducts */ > 
                     Add to Cart
                 </button>
             </li>
